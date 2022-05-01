@@ -18,13 +18,15 @@ import { ReactComponent as GoogleIcon } from "../../assets/google.svg";
 type FormProps = {
   email: string;
   password: string;
+  confirmPassword: string;
 };
 const initialValues = {
   email: "",
   password: "",
+  confirmPassword: "",
 };
 
-const Login = () => {
+const Register = () => {
   const handleSubmit = (values: FormProps) => {
     console.log(values);
   };
@@ -39,12 +41,8 @@ const Login = () => {
             alignItems="flex-start"
           >
             <Logo height={55} width={110} />
-
             <VStack spacing={0} alignItems="flex-start">
-              <Heading fontSize="2xl">Welcome back</Heading>
-              <Text color="gray.400" fontSize="sm">
-                Log in to continue
-              </Text>
+              <Heading fontSize="2xl">Create Account</Heading>
             </VStack>
 
             <Formik
@@ -66,7 +64,7 @@ const Login = () => {
                           return (
                             <>
                               <TextInput
-                                label="Email"
+                                label="Email/Username"
                                 name={field.name}
                                 error={meta.error}
                                 value={field.value}
@@ -100,6 +98,25 @@ const Login = () => {
                           );
                         }}
                       </Field>
+                      <Field name="confirmPassword">
+                        {({ field, form, meta }: FieldProps) => {
+                          return (
+                            <>
+                              <TextInput
+                                label="Confirm Password"
+                                name={field.name}
+                                error={meta.error}
+                                value={field.value}
+                                placeholder="confirm password"
+                                isInvalid={
+                                  meta.touched && meta.error ? true : false
+                                }
+                                onChange={field.onChange}
+                              />
+                            </>
+                          );
+                        }}
+                      </Field>
                     </VStack>
 
                     <VStack w="full" spacing={6} alignItems="flex-start">
@@ -110,7 +127,7 @@ const Login = () => {
                         paddingX={0}
                         paddingY={7}
                       >
-                        Sign in
+                        Sign up
                       </Button>
 
                       <Button
@@ -125,13 +142,13 @@ const Login = () => {
                         gap={3}
                       >
                         <GoogleIcon />
-                        <Text fontWeight="light">Sign in with Google</Text>
+                        <Text fontWeight="light">Sign up with Google</Text>
                       </Button>
 
                       <Text>
-                        Not yet signed up?{" "}
-                        <ChakraLink as={Link} to="/register" color="blue.900">
-                          Create your account here
+                        Already have an account?{" "}
+                        <ChakraLink as={Link} to="/login" color="blue.900">
+                          Login here
                         </ChakraLink>
                       </Text>
                     </VStack>
@@ -151,4 +168,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;

@@ -3,7 +3,6 @@ import {
   Flex,
   Heading,
   HStack,
-  Image,
   Stack,
   Text,
   VStack,
@@ -18,11 +17,16 @@ type Props = {
 };
 const AuthLayout = ({ children }: Props) => {
   return (
-    <Flex minWidth="max-content" h="100vh" columnGap="2">
+    <Flex
+      w="100vw"
+      h={{ base: "auto", md: "100vh" }}
+      direction={{ base: "column", md: "row" }}
+      columnGap="2"
+    >
       <Flex
-        flex="1"
+        py={[0, 10, 20]}
+        display={["none", "none", "flex"]}
         bg="blue.900"
-        h="full"
         justifyContent="center"
         alignItems="center"
         overflowX="hidden"
@@ -39,15 +43,15 @@ const AuthLayout = ({ children }: Props) => {
             </Heading>
           </Stack>
 
-          <HStack w="full" justifyContent="center">
+          <HStack w="full" justifyContent="center" alignItems="flex-end">
             <Box flex={1}>
-              <NotesIcon width={120} />
+              <TodosIcon width={120} />
             </Box>
             <Box flex={1}>
               <NotesIcon width={120} />
             </Box>
             <Box flex={1}>
-              <NotesIcon width={120} />
+              <BookmarksIcon width={120} />
             </Box>
           </HStack>
 
@@ -60,9 +64,7 @@ const AuthLayout = ({ children }: Props) => {
           </Stack>
         </VStack>
       </Flex>
-      <Box flex="1" h="full">
-        {children}
-      </Box>
+      {children}
     </Flex>
   );
 };
