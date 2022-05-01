@@ -1,5 +1,5 @@
-import { Heading, VStack } from "@chakra-ui/react";
-import { Outlet, Route, Routes } from "react-router-dom";
+import { VStack } from "@chakra-ui/react";
+import { Outlet } from "react-router-dom";
 
 const Board = () => {
   return (

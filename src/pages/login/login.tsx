@@ -13,7 +13,7 @@ import AuthLayout from "../../layouts/auth/auth";
 import TextInput from "../../components/form/text-input";
 
 import { ReactComponent as Logo } from "../../assets/logo.svg";
-import { ReactComponent as GoogleIcon } from "../../assets/google.svg";
+
 import GoogleSignin from "../../features/google-signin/google-signin";
 
 type FormProps = {
