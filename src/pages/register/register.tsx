@@ -14,6 +14,7 @@ import TextInput from "../../components/form/text-input";
 
 import { ReactComponent as Logo } from "../../assets/logo.svg";
 import { ReactComponent as GoogleIcon } from "../../assets/google.svg";
+import GoogleSignup from "../../features/google-signup/google-signup";
 
 type FormProps = {
   email: string;
@@ -130,20 +131,7 @@ const Register = () => {
                         Sign up
                       </Button>
 
-                      <Button
-                        colorScheme="gray"
-                        w="full"
-                        type="button"
-                        paddingX={0}
-                        paddingY={7}
-                        display="flex"
-                        alignContent="center"
-                        justifyContent="center"
-                        gap={3}
-                      >
-                        <GoogleIcon />
-                        <Text fontWeight="light">Sign up with Google</Text>
-                      </Button>
+                      <GoogleSignup />
 
                       <Text>
                         Already have an account?{" "}
