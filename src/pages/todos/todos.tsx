@@ -1,5 +1,4 @@
 import {
-  Avatar,
   Badge,
   Box,
   Button,
@@ -8,6 +7,7 @@ import {
   Heading,
   HStack,
   Icon,
+  IconButton,
   Menu,
   MenuButton,
   MenuItem,
@@ -15,20 +15,57 @@ import {
   Spacer,
   Text,
   VStack,
-  Wrap,
-  WrapItem,
 } from "@chakra-ui/react";
 import Header from "../../components/header/header";
 import { data } from "../../dump";
 import { MdMoreHoriz } from "react-icons/md";
+import { BsFillPencilFill } from "react-icons/bs";
+import { HiArchive } from "react-icons/hi";
+import {
+  AiFillFolderOpen,
+  AiFillCheckSquare,
+  AiOutlineClockCircle,
+} from "react-icons/ai";
+import { useState } from "react";
+
+import TodoSidebar from "./todo-sidebar";
+import { COMPLETED, PENDING, BACKLOG } from "../../helpers/constants";
 
 type TodoProps = {
   id: number;
   title: string;
   status: string;
   userId: number;
+  description: string;
 };
+
 const Todos = () => {
+  const [todos, setTodos] = useState(data);
+  const [activeTodo, setActiveTodo] = useState<TodoProps>({} as TodoProps);
+
+  const handleDelete = (id: number) => {
+    if (!id) return;
+
+    const updatedTodoAfterDelete = todos.filter((todo) => todo.id !== id);
+    setTodos(updatedTodoAfterDelete);
+  };
+
+  const handleTodoStatusUpdate = ({
+    id,
+    status,
+  }: {
+    id: number;
+    status: string;
+  }) => {
+    const updatedTodoAfterStatusUpdate = todos.map((todo) => {
+      if (todo.id === id) {
+        return { ...todo, status: status };
+      }
+      return todo;
+    });
+    setTodos(updatedTodoAfterStatusUpdate);
+  };
+
   return (
     <VStack w="full" h="100vh">
       <Header>Todos</Header>
@@ -48,7 +85,9 @@ const Todos = () => {
               </Box>
               <Box flex={{ base: 1, md: 10 }} h="full">
                 <HStack pb={4}>
-                  <Heading size="lg">All Todos</Heading>
+                  <Heading size="xl" fontWeight={400}>
+                    All Todos
+                  </Heading>
                   <Spacer />
                   <Button colorScheme="green">Create Task</Button>
                 </HStack>
@@ -60,8 +99,14 @@ const Todos = () => {
                   maxH={500}
                   overflowY="scroll"
                 >
-                  {data?.map((todo: TodoProps) => (
-                    <TodoItem {...todo} />
+                  {todos?.map((todo: TodoProps) => (
+                    <TodoItem
+                      todo={todo}
+                      onClick={() => setActiveTodo(todo)}
+                      isActive={activeTodo?.id === todo.id}
+                      handleDelete={() => handleDelete(todo.id)}
+                      handleTodoStatusUpdate={handleTodoStatusUpdate}
+                    />
                   ))}
                 </VStack>
               </Box>
@@ -70,14 +115,89 @@ const Todos = () => {
         </Box>
 
         <Box flex={2} h="full">
-          3
+          <TodoDetails todo={activeTodo} />
         </Box>
       </Flex>
     </VStack>
   );
 };
 
-const TodoItem = ({ id, status, title, userId }: TodoProps) => {
+const TodoItem = ({
+  todo,
+  onClick,
+  isActive,
+  handleDelete,
+  handleTodoStatusUpdate,
+}: {
+  todo: TodoProps;
+  onClick: () => void;
+  isActive: boolean;
+  handleDelete: () => void;
+  handleTodoStatusUpdate: ({
+    id,
+    status,
+  }: {
+    id: number;
+    status: string;
+  }) => void;
+}) => {
+  const { id, status, title } = todo;
+
+  const renderMenuActionBasedOnTodoStatus = () => {
+    if (status === PENDING) {
+      return (
+        <>
+          <MenuItem
+            icon={<AiFillCheckSquare />}
+            onClick={() => handleTodoStatusUpdate({ id, status: COMPLETED })}
+          >
+            Mark as Complete
+          </MenuItem>
+          <MenuItem
+            icon={<AiFillFolderOpen />}
+            onClick={() => handleTodoStatusUpdate({ id, status: BACKLOG })}
+          >
+            Mark as Backlog
+          </MenuItem>
+        </>
+      );
+    } else if (status === COMPLETED) {
+      return (
+        <>
+          <MenuItem
+            icon={<BsFillPencilFill />}
+            onClick={() => handleTodoStatusUpdate({ id, status: PENDING })}
+          >
+            Mark as Pending
+          </MenuItem>
+          <MenuItem
+            icon={<AiFillFolderOpen />}
+            onClick={() => handleTodoStatusUpdate({ id, status: BACKLOG })}
+          >
+            Mark as Backlog
+          </MenuItem>
+        </>
+      );
+    } else {
+      return (
+        <>
+          <MenuItem
+            icon={<AiFillCheckSquare />}
+            onClick={() => handleTodoStatusUpdate({ id, status: COMPLETED })}
+          >
+            Mark as Completed
+          </MenuItem>
+          <MenuItem
+            icon={<BsFillPencilFill />}
+            onClick={() => handleTodoStatusUpdate({ id, status: PENDING })}
+          >
+            Mark as Pending
+          </MenuItem>
+        </>
+      );
+    }
+  };
+
   return (
     <Flex
       bg="white"
@@ -87,17 +207,24 @@ const TodoItem = ({ id, status, title, userId }: TodoProps) => {
       alignItems="center"
       justifyContent="space-around"
       fontSize=".9em"
+      cursor="pointer"
     >
-      <Box width="65%">
-        <Text fontWeight={500}>{title}</Text>
+      <Box width="65%" onClick={onClick}>
+        <Text fontWeight={isActive ? 600 : 400}>{title}</Text>
         <Text color="gray.500">Created on 13 July, 2019 at 08:33AM</Text>
       </Box>
 
-      <Box>
+      <Box onClick={onClick}>
         <Badge
           borderRadius="full"
           px="2"
-          colorScheme="teal"
+          colorScheme={
+            status === PENDING
+              ? "yellow"
+              : status === COMPLETED
+              ? "blue"
+              : "gray"
+          }
           w={110}
           p={2}
           textAlign="center"
@@ -112,18 +239,18 @@ const TodoItem = ({ id, status, title, userId }: TodoProps) => {
           {({ isOpen }) => (
             <>
               <MenuButton
-                isActive={isOpen}
-                as={Text}
-                cursor="pointer"
+                as={IconButton}
+                aria-label="Options"
+                icon={<MdMoreHoriz />}
+                variant="outline"
+              />
 
-                // rightIcon={<ChevronDownIcon />}
-              >
-                <Icon as={MdMoreHoriz} />
-              </MenuButton>
               <MenuList>
-                <MenuItem>Mark as Complete</MenuItem>
-                <MenuItem>Edit</MenuItem>
-                <MenuItem onClick={() => alert("Kagebunshin")}>Delete</MenuItem>
+                {renderMenuActionBasedOnTodoStatus()}
+                <MenuItem icon={<BsFillPencilFill />}>Edit</MenuItem>
+                <MenuItem icon={<HiArchive />} onClick={() => handleDelete()}>
+                  Delete
+                </MenuItem>
               </MenuList>
             </>
           )}
@@ -132,66 +259,51 @@ const TodoItem = ({ id, status, title, userId }: TodoProps) => {
     </Flex>
   );
 };
-const TodoSidebar = () => {
+
+const TodoDetails = ({ todo }: { todo: TodoProps }) => {
+  const { id, title, description, status } = todo;
+
+  if (!id) return <Box w="full" h="full" overflowY="scroll" p={10}></Box>;
   return (
-    <VStack
-      spacing={5}
-      borderRadius={30}
-      bg="white"
-      paddingY={10}
-      paddingX={3}
-      boxShadow="box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.1);"
-      fontSize=".9em"
-    >
-      <VStack textAlign="center" alignItems="center" cursor="pointer">
-        <Text>All Todos</Text>
-        <Wrap>
-          <WrapItem>
-            <Avatar size="sm" name="3" />
-          </WrapItem>
-        </Wrap>
-      </VStack>
-      <VStack textAlign="center" alignItems="center" cursor="pointer">
-        <Text>Backlogs</Text>
-        <Wrap>
-          <WrapItem>
-            <Avatar size="sm" name="3" />
-          </WrapItem>
-        </Wrap>
-      </VStack>
-      <VStack textAlign="center" alignItems="center" cursor="pointer">
-        <Text>In Progress</Text>
-        <Wrap>
-          <WrapItem>
-            <Avatar size="sm" name="3" />
-          </WrapItem>
-        </Wrap>
-      </VStack>
-      <VStack textAlign="center" alignItems="center" cursor="pointer">
-        <Text>Finished</Text>
-        <Wrap>
-          <WrapItem>
-            <Avatar size="sm" name="3" />
-          </WrapItem>
-        </Wrap>
-      </VStack>
-      <VStack textAlign="center" alignItems="center" cursor="pointer">
-        <Text>Overdue</Text>
-        <Wrap>
-          <WrapItem>
-            <Avatar size="sm" name="3" />
-          </WrapItem>
-        </Wrap>
-      </VStack>
-      <VStack textAlign="center" alignItems="center" cursor="pointer">
-        <Text>Trash</Text>
-        <Wrap>
-          <WrapItem>
-            <Avatar size="sm" name="3" />
-          </WrapItem>
-        </Wrap>
-      </VStack>
-    </VStack>
+    <Box w="full" h="full" overflowY="scroll" p={10}>
+      <Flex justifyContent="space-between">
+        <Flex alignItems="center" gap={3}>
+          <Badge
+            borderRadius="full"
+            px="2"
+            colorScheme={
+              status === PENDING
+                ? "yellow"
+                : status === COMPLETED
+                ? "blue"
+                : "gray"
+            }
+            w={110}
+            p={2}
+            textAlign="center"
+            fontWeight="normal"
+            fontSize=".8em"
+          >
+            {status}
+          </Badge>
+        </Flex>
+        <Flex
+          gap={1}
+          alignItems="center"
+          color="gray.500"
+          fontWeight={300}
+          fontSize="sm"
+        >
+          <Icon as={AiOutlineClockCircle} />
+          <Text>24/07/2022</Text>
+        </Flex>
+      </Flex>
+      <Heading fontSize="5xl" fontWeight={300} marginY={2}>
+        {title}
+      </Heading>
+
+      <Text>{description}</Text>
+    </Box>
   );
 };
 
