@@ -39,6 +39,13 @@ export type TodoProps = {
   description: string;
 };
 
+export const TodoColorScheme: any = {
+  COMPLETED: "blue",
+  PENDING: "yellow",
+  DELETED: "red",
+  BACKLOG: "gray",
+};
+
 const Todos = () => {
   const [todos, setTodos] = useState(data);
   const [filteredTodos, setFilteredTodos] = useState(data);
@@ -171,12 +178,14 @@ const TodoItem = ({
       return (
         <>
           <MenuItem
+            py={2}
             icon={<AiFillCheckSquare color="blue" size={20} />}
             onClick={() => handleTodoStatusUpdate({ id, status: COMPLETED })}
           >
             Mark as Complete
           </MenuItem>
           <MenuItem
+            py={2}
             icon={<AiFillFolderOpen color="gray" size={20} />}
             onClick={() => handleTodoStatusUpdate({ id, status: BACKLOG })}
           >
@@ -188,12 +197,14 @@ const TodoItem = ({
       return (
         <>
           <MenuItem
+            py={2}
             icon={<BsFillPencilFill color="yellow" size={20} />}
             onClick={() => handleTodoStatusUpdate({ id, status: PENDING })}
           >
             Mark as Pending
           </MenuItem>
           <MenuItem
+            py={2}
             icon={<AiFillFolderOpen color="blue" size={20} />}
             onClick={() => handleTodoStatusUpdate({ id, status: BACKLOG })}
           >
@@ -205,6 +216,7 @@ const TodoItem = ({
       return (
         <>
           <MenuItem
+            py={2}
             icon={<AiFillCheckSquare color="blue" size={20} />}
             onClick={() => handleTodoStatusUpdate({ id, status: PENDING })}
           >
@@ -264,10 +276,14 @@ const TodoItem = ({
 
               <MenuList>
                 {renderMenuActionBasedOnTodoStatus()}
-                <MenuItem icon={<BsFillPencilFill color="green" size={20} />}>
+                <MenuItem
+                  py={2}
+                  icon={<BsFillPencilFill color="green" size={20} />}
+                >
                   Edit
                 </MenuItem>
                 <MenuItem
+                  py={2}
                   icon={<HiArchive color="red" size={20} />}
                   onClick={() =>
                     handleTodoStatusUpdate({ id, status: DELETED })
@@ -307,13 +323,7 @@ const TodoDetails = ({
           <Badge
             borderRadius="full"
             px="2"
-            colorScheme={
-              status === PENDING
-                ? "yellow"
-                : status === COMPLETED
-                ? "blue"
-                : "gray"
-            }
+            colorScheme={TodoColorScheme[status] || "teal"}
             w={110}
             p={2}
             textAlign="center"
