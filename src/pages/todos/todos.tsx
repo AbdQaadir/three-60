@@ -52,12 +52,17 @@ const Todos = () => {
     id: number;
     status: string;
   }) => {
+    if (activeTodo.id === id) {
+      setActiveTodo((prev) => ({ ...prev, status }));
+    }
+
     const updatedTodoAfterStatusUpdate = todos.map((todo) => {
       if (todo.id === id) {
-        return { ...todo, status: status };
+        return { ...todo, status };
       }
       return todo;
     });
+
     setTodos(updatedTodoAfterStatusUpdate);
   };
 
@@ -131,19 +136,17 @@ const Todos = () => {
         </Box>
 
         <Box flex={2} h="full">
-          <TodoDetails todo={activeTodo} />
+          <TodoDetails
+            todo={activeTodo}
+            handleTodoStatusUpdate={handleTodoStatusUpdate}
+          />
         </Box>
       </Flex>
     </VStack>
   );
 };
 
-const TodoItem = ({
-  todo,
-  onClick,
-  isActive,
-  handleTodoStatusUpdate,
-}: {
+type TTodoItemProps = {
   todo: TodoProps;
   onClick: () => void;
   isActive: boolean;
@@ -154,7 +157,13 @@ const TodoItem = ({
     id: number;
     status: string;
   }) => void;
-}) => {
+};
+const TodoItem = ({
+  todo,
+  onClick,
+  isActive,
+  handleTodoStatusUpdate,
+}: TTodoItemProps) => {
   const { id, status, title } = todo;
 
   const renderMenuActionBasedOnTodoStatus = () => {
@@ -168,7 +177,7 @@ const TodoItem = ({
             Mark as Complete
           </MenuItem>
           <MenuItem
-            icon={<AiFillFolderOpen color="blue" size={20} />}
+            icon={<AiFillFolderOpen color="gray" size={20} />}
             onClick={() => handleTodoStatusUpdate({ id, status: BACKLOG })}
           >
             Mark as Backlog
@@ -179,7 +188,7 @@ const TodoItem = ({
       return (
         <>
           <MenuItem
-            icon={<BsFillPencilFill color="blue" size={20} />}
+            icon={<BsFillPencilFill color="yellow" size={20} />}
             onClick={() => handleTodoStatusUpdate({ id, status: PENDING })}
           >
             Mark as Pending
@@ -243,7 +252,7 @@ const TodoItem = ({
         </Badge>
       </Box>
       <Box>
-        <Menu>
+        <Menu placement="bottom-end">
           {({ isOpen }) => (
             <>
               <MenuButton
@@ -275,7 +284,19 @@ const TodoItem = ({
   );
 };
 
-const TodoDetails = ({ todo }: { todo: TodoProps }) => {
+const TodoDetails = ({
+  todo,
+  handleTodoStatusUpdate,
+}: {
+  todo: TodoProps;
+  handleTodoStatusUpdate: ({
+    id,
+    status,
+  }: {
+    id: number;
+    status: string;
+  }) => void;
+}) => {
   const { id, title, description, status } = todo;
 
   if (!id) return <Box w="full" h="full" overflowY="scroll" p={10}></Box>;
@@ -317,7 +338,23 @@ const TodoDetails = ({ todo }: { todo: TodoProps }) => {
         {title}
       </Heading>
 
-      <Text>{description}</Text>
+      <Text height="60%" overflowY="scroll">
+        {description}
+      </Text>
+
+      <Flex justifyContent="flex-end" gap={4}>
+        <Button colorScheme="green" borderRadius="50%" p={1}>
+          <BsFillPencilFill size={17} />
+        </Button>
+        <Button
+          colorScheme="red"
+          borderRadius="50%"
+          onClick={() => handleTodoStatusUpdate({ id, status: DELETED })}
+          p={1}
+        >
+          <HiArchive size={17} />
+        </Button>
+      </Flex>
     </Box>
   );
 };

@@ -1,12 +1,5 @@
-import {
-  Avatar,
-  Badge,
-  Tag,
-  Text,
-  VStack,
-  Wrap,
-  WrapItem,
-} from "@chakra-ui/react";
+import { Badge, Text, VStack, Wrap, WrapItem } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 import { BACKLOG, COMPLETED, DELETED, PENDING } from "../../helpers/constants";
 import { TodoProps } from "./todos";
 
@@ -20,195 +13,85 @@ const TodoSidebar = ({
   activeStatus,
   handleTodoStatusClick,
 }: TTodoSidebarProps) => {
+  const [todoStats, setTodoStats] = useState<any>([]);
+
+  useEffect(() => {
+    let stats = [
+      { label: "All Todos", status: "", color: "green", count: todos.length },
+      {
+        label: "In Progress",
+        status: PENDING,
+        color: "yellow",
+        count: todos.filter((todo) => todo.status === PENDING).length,
+      },
+      {
+        label: "Finished",
+        status: COMPLETED,
+        color: "blue",
+        count: todos.filter((todo) => todo.status === COMPLETED).length,
+      },
+      {
+        label: "Backlog",
+        status: BACKLOG,
+        color: "gray",
+        count: todos.filter((todo) => todo.status === BACKLOG).length,
+      },
+      {
+        label: "Trash",
+        status: DELETED,
+        color: "red",
+        count: todos.filter((todo) => todo.status === DELETED).length,
+      },
+    ];
+
+    setTodoStats(stats);
+  }, [todos]);
+
   return (
     <VStack
       spacing={3}
       borderRadius={30}
+      overflow="hidden"
       bg="white"
       paddingY={3}
       boxShadow="box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.1);"
       fontSize=".9em"
+      minHeight={300}
     >
-      <VStack
-        textAlign="center"
-        alignItems="center"
-        cursor="pointer"
-        paddingY={2}
-        paddingX={3}
-        w="full"
-        bg={activeStatus === "" ? "gray.50" : "initial"}
-        borderLeft={activeStatus === "" ? 3 : "0"}
-        borderLeftStyle="solid"
-        borderLeftColor={activeStatus === "" ? "blue.900" : "initial"}
-        onClick={() => handleTodoStatusClick("")}
-      >
-        <Text>All Todos</Text>
-        <Wrap>
-          <WrapItem>
-            <Badge
-              colorScheme="green"
-              p={2}
-              fontSize="0.8em"
-              fontWeight="light"
-              borderRadius="50%"
-              minW={10}
-              textAlign="center"
-            >
-              {todos?.length}
-            </Badge>
-          </WrapItem>
-        </Wrap>
-      </VStack>
-      <VStack
-        textAlign="center"
-        alignItems="center"
-        cursor="pointer"
-        paddingY={2}
-        paddingX={3}
-        w="full"
-        bg={activeStatus === BACKLOG ? "gray.50" : "initial"}
-        borderLeft={activeStatus === BACKLOG ? 3 : "0"}
-        borderLeftStyle="solid"
-        borderLeftColor={activeStatus === BACKLOG ? "blue.900" : "initial"}
-        onClick={() => handleTodoStatusClick(BACKLOG)}
-      >
-        <Text>Backlogs</Text>
-        <Wrap>
-          <WrapItem>
-            <Badge
-              colorScheme="gray"
-              p={2}
-              fontSize="0.8em"
-              fontWeight="light"
-              borderRadius="50%"
-              minW={10}
-              textAlign="center"
-            >
-              {todos?.filter((todo) => todo.status === BACKLOG).length}
-            </Badge>
-          </WrapItem>
-        </Wrap>
-      </VStack>
-      <VStack
-        textAlign="center"
-        alignItems="center"
-        cursor="pointer"
-        paddingY={2}
-        paddingX={3}
-        w="full"
-        bg={activeStatus === PENDING ? "gray.50" : "initial"}
-        borderLeft={activeStatus === PENDING ? 3 : "0"}
-        borderLeftStyle="solid"
-        borderLeftColor={activeStatus === PENDING ? "blue.900" : "initial"}
-        onClick={() => handleTodoStatusClick(PENDING)}
-      >
-        <Text>In Progress</Text>
-        <Wrap>
-          <WrapItem>
-            <Badge
-              colorScheme="yellow"
-              p={2}
-              fontSize="0.8em"
-              fontWeight="light"
-              borderRadius="50%"
-              minW={10}
-              textAlign="center"
-            >
-              {todos?.filter((todo) => todo.status === PENDING).length}
-            </Badge>
-          </WrapItem>
-        </Wrap>
-      </VStack>
-      <VStack
-        textAlign="center"
-        alignItems="center"
-        cursor="pointer"
-        paddingY={2}
-        paddingX={3}
-        w="full"
-        bg={activeStatus === COMPLETED ? "gray.50" : "initial"}
-        borderLeft={activeStatus === COMPLETED ? 3 : "0"}
-        borderLeftStyle="solid"
-        borderLeftColor={activeStatus === COMPLETED ? "blue.900" : "initial"}
-        onClick={() => handleTodoStatusClick(COMPLETED)}
-      >
-        <Text>Finished</Text>
-        <Wrap>
-          <WrapItem>
-            <Badge
-              colorScheme="blue"
-              p={2}
-              fontSize="0.8em"
-              fontWeight="light"
-              borderRadius="50%"
-              minW={10}
-              textAlign="center"
-            >
-              {todos?.filter((todo) => todo.status === COMPLETED).length}
-            </Badge>
-          </WrapItem>
-        </Wrap>
-      </VStack>
-      <VStack
-        textAlign="center"
-        alignItems="center"
-        cursor="pointer"
-        paddingY={2}
-        paddingX={3}
-        w="full"
-        bg={activeStatus === PENDING ? "gray.50" : "initial"}
-        borderLeft={activeStatus === PENDING ? 3 : "0"}
-        borderLeftStyle="solid"
-        borderLeftColor={activeStatus === PENDING ? "blue.900" : "initial"}
-        onClick={() => handleTodoStatusClick(PENDING)}
-      >
-        <Text>Overdue</Text>
-        <Wrap>
-          <WrapItem>
-            <Badge
-              colorScheme="teal"
-              p={2}
-              fontSize="0.8em"
-              fontWeight="light"
-              borderRadius="50%"
-              minW={10}
-              textAlign="center"
-            >
-              {todos?.filter((todo) => todo.status === BACKLOG).length}
-            </Badge>
-          </WrapItem>
-        </Wrap>
-      </VStack>
-      <VStack
-        textAlign="center"
-        alignItems="center"
-        cursor="pointer"
-        paddingY={2}
-        paddingX={3}
-        w="full"
-        bg={activeStatus === DELETED ? "gray.50" : "initial"}
-        borderLeft={activeStatus === DELETED ? 3 : "0"}
-        borderLeftStyle="solid"
-        borderLeftColor={activeStatus === DELETED ? "blue.900" : "initial"}
-        onClick={() => handleTodoStatusClick(DELETED)}
-      >
-        <Text>Trash</Text>
-        <Wrap>
-          <WrapItem>
-            <Badge
-              colorScheme="red"
-              p={2}
-              fontSize="0.8em"
-              fontWeight="light"
-              borderRadius="50%"
-              minW={10}
-              textAlign="center"
-            >
-              {todos?.filter((todo) => todo.status === DELETED).length}
-            </Badge>
-          </WrapItem>
-        </Wrap>
-      </VStack>
+      {todoStats.map((todoStat: any) => (
+        <VStack
+          textAlign="center"
+          alignItems="center"
+          cursor="pointer"
+          paddingY={2}
+          paddingX={3}
+          w="full"
+          bg={activeStatus === todoStat.status ? "gray.50" : "initial"}
+          borderLeft={activeStatus === todoStat.status ? 3 : "0"}
+          borderLeftStyle="solid"
+          borderLeftColor={
+            activeStatus === todoStat.status ? "blue.900" : "initial"
+          }
+          onClick={() => handleTodoStatusClick("")}
+        >
+          <Text>{todoStat.label}</Text>
+          <Wrap>
+            <WrapItem>
+              <Badge
+                colorScheme={todoStat.color}
+                p={2}
+                fontSize="0.8em"
+                fontWeight="light"
+                borderRadius="50%"
+                minW={10}
+                textAlign="center"
+              >
+                {todoStat?.count}
+              </Badge>
+            </WrapItem>
+          </Wrap>
+        </VStack>
+      ))}
     </VStack>
   );
 };
