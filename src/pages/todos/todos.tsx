@@ -26,12 +26,12 @@ import {
   AiFillCheckSquare,
   AiOutlineClockCircle,
 } from "react-icons/ai";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import TodoSidebar from "./todo-sidebar";
-import { COMPLETED, PENDING, BACKLOG } from "../../helpers/constants";
+import { COMPLETED, PENDING, BACKLOG, DELETED } from "../../helpers/constants";
 
-type TodoProps = {
+export type TodoProps = {
   id: number;
   title: string;
   status: string;
@@ -41,14 +41,9 @@ type TodoProps = {
 
 const Todos = () => {
   const [todos, setTodos] = useState(data);
+  const [filteredTodos, setFilteredTodos] = useState(data);
+  const [activeStatus, setActiveStatus] = useState("");
   const [activeTodo, setActiveTodo] = useState<TodoProps>({} as TodoProps);
-
-  const handleDelete = (id: number) => {
-    if (!id) return;
-
-    const updatedTodoAfterDelete = todos.filter((todo) => todo.id !== id);
-    setTodos(updatedTodoAfterDelete);
-  };
 
   const handleTodoStatusUpdate = ({
     id,
@@ -66,6 +61,18 @@ const Todos = () => {
     setTodos(updatedTodoAfterStatusUpdate);
   };
 
+  useEffect(() => {
+    if (!activeStatus) {
+      setFilteredTodos(todos);
+    } else {
+      setFilteredTodos(todos.filter((todo) => todo.status === activeStatus));
+    }
+  }, [activeStatus, todos]);
+
+  const handleTodoStatusClick = (status: string) => {
+    setActiveStatus(status);
+  };
+
   return (
     <VStack w="full" h="100vh">
       <Header>Todos</Header>
@@ -81,12 +88,22 @@ const Todos = () => {
                 display="flex"
                 justifyContent="center"
               >
-                <TodoSidebar />
+                <TodoSidebar
+                  todos={todos}
+                  activeStatus={activeStatus}
+                  handleTodoStatusClick={handleTodoStatusClick}
+                />
               </Box>
               <Box flex={{ base: 1, md: 10 }} h="full">
                 <HStack pb={4}>
-                  <Heading size="xl" fontWeight={400}>
-                    All Todos
+                  <Heading
+                    size="xl"
+                    fontWeight={400}
+                    textTransform="capitalize"
+                  >
+                    {activeStatus
+                      ? activeStatus.toLowerCase() + " tasks"
+                      : "All Todos"}
                   </Heading>
                   <Spacer />
                   <Button colorScheme="green">Create Task</Button>
@@ -99,12 +116,11 @@ const Todos = () => {
                   maxH={500}
                   overflowY="scroll"
                 >
-                  {todos?.map((todo: TodoProps) => (
+                  {filteredTodos?.map((todo: TodoProps) => (
                     <TodoItem
                       todo={todo}
                       onClick={() => setActiveTodo(todo)}
                       isActive={activeTodo?.id === todo.id}
-                      handleDelete={() => handleDelete(todo.id)}
                       handleTodoStatusUpdate={handleTodoStatusUpdate}
                     />
                   ))}
@@ -126,13 +142,11 @@ const TodoItem = ({
   todo,
   onClick,
   isActive,
-  handleDelete,
   handleTodoStatusUpdate,
 }: {
   todo: TodoProps;
   onClick: () => void;
   isActive: boolean;
-  handleDelete: () => void;
   handleTodoStatusUpdate: ({
     id,
     status,
@@ -148,13 +162,13 @@ const TodoItem = ({
       return (
         <>
           <MenuItem
-            icon={<AiFillCheckSquare />}
+            icon={<AiFillCheckSquare color="blue" size={20} />}
             onClick={() => handleTodoStatusUpdate({ id, status: COMPLETED })}
           >
             Mark as Complete
           </MenuItem>
           <MenuItem
-            icon={<AiFillFolderOpen />}
+            icon={<AiFillFolderOpen color="blue" size={20} />}
             onClick={() => handleTodoStatusUpdate({ id, status: BACKLOG })}
           >
             Mark as Backlog
@@ -165,39 +179,39 @@ const TodoItem = ({
       return (
         <>
           <MenuItem
-            icon={<BsFillPencilFill />}
+            icon={<BsFillPencilFill color="blue" size={20} />}
             onClick={() => handleTodoStatusUpdate({ id, status: PENDING })}
           >
             Mark as Pending
           </MenuItem>
           <MenuItem
-            icon={<AiFillFolderOpen />}
+            icon={<AiFillFolderOpen color="blue" size={20} />}
             onClick={() => handleTodoStatusUpdate({ id, status: BACKLOG })}
           >
             Mark as Backlog
           </MenuItem>
         </>
       );
-    } else {
+    } else if (status === DELETED) {
       return (
         <>
           <MenuItem
-            icon={<AiFillCheckSquare />}
-            onClick={() => handleTodoStatusUpdate({ id, status: COMPLETED })}
-          >
-            Mark as Completed
-          </MenuItem>
-          <MenuItem
-            icon={<BsFillPencilFill />}
+            icon={<AiFillCheckSquare color="blue" size={20} />}
             onClick={() => handleTodoStatusUpdate({ id, status: PENDING })}
           >
-            Mark as Pending
+            Restore Task
           </MenuItem>
         </>
       );
     }
   };
 
+  const TodoStatusColorScheme: any = {
+    COMPLETED: "blue",
+    PENDING: "yellow",
+    DELETED: "red",
+    BACKLOG: "gray",
+  };
   return (
     <Flex
       bg="white"
@@ -218,13 +232,7 @@ const TodoItem = ({
         <Badge
           borderRadius="full"
           px="2"
-          colorScheme={
-            status === PENDING
-              ? "yellow"
-              : status === COMPLETED
-              ? "blue"
-              : "gray"
-          }
+          colorScheme={TodoStatusColorScheme[status]}
           w={110}
           p={2}
           textAlign="center"
@@ -247,8 +255,15 @@ const TodoItem = ({
 
               <MenuList>
                 {renderMenuActionBasedOnTodoStatus()}
-                <MenuItem icon={<BsFillPencilFill />}>Edit</MenuItem>
-                <MenuItem icon={<HiArchive />} onClick={() => handleDelete()}>
+                <MenuItem icon={<BsFillPencilFill color="green" size={20} />}>
+                  Edit
+                </MenuItem>
+                <MenuItem
+                  icon={<HiArchive color="red" size={20} />}
+                  onClick={() =>
+                    handleTodoStatusUpdate({ id, status: DELETED })
+                  }
+                >
                   Delete
                 </MenuItem>
               </MenuList>
