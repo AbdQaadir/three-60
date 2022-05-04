@@ -19,7 +19,6 @@ function TextInput({
   isInvalid,
   ...props
 }: TextInputProps) {
-  console.log({ props });
   return (
     <>
       <FormControl isInvalid={isInvalid}>
