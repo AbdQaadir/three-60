@@ -1,12 +1,7 @@
 import { Container, Flex, HStack, Link, Stack, Text } from "@chakra-ui/react";
 import React from "react";
-import {
-  Link as RouterLink,
-  useLocation,
-  useMatch,
-  useResolvedPath,
-} from "react-router-dom";
-import { NavLink } from "react-router-dom";
+import { Link as RouterLink, useLocation } from "react-router-dom";
+
 import { ReactComponent as Logo } from "../../assets/logo.svg";
 import Links from "../../pages/links/links";
 import Notes from "../../pages/notes/notes";
