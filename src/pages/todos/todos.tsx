@@ -30,6 +30,7 @@ import { useEffect, useState } from "react";
 
 import TodoSidebar from "./todo-sidebar";
 import { COMPLETED, PENDING, BACKLOG, DELETED } from "../../helpers/constants";
+import AddTodoModal from "./add-todo-modal/add-todo-modal";
 
 export type TodoProps = {
   id: number;
@@ -118,7 +119,11 @@ const Todos = () => {
                       : "All Todos"}
                   </Heading>
                   <Spacer />
-                  <Button colorScheme="green">Create Task</Button>
+                  <AddTodoModal>
+                    {({ handleClick }) => (
+                      <Button onClick={handleClick}>Create Task</Button>
+                    )}
+                  </AddTodoModal>
                 </HStack>
 
                 <VStack

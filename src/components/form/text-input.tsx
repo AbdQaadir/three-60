@@ -7,7 +7,7 @@ import {
 import React from "react";
 
 type TextInputProps = {
-  label: string;
+  label?: string;
   name: string;
   error: string | undefined;
   isInvalid: boolean;
