@@ -82,7 +82,7 @@ const TodoSidebar = ({
                 p={2}
                 fontSize="0.8em"
                 fontWeight="light"
-                borderRadius="50%"
+                borderRadius="full"
                 minW={10}
                 textAlign="center"
               >
