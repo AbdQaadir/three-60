@@ -40,12 +40,13 @@ const Header = ({ children }: Props) => {
       <Container maxW="container.xl">
         <HStack w="full">
           <Flex alignItems="center" columnGap={5} w="50%">
-            <Logo />
+            <Logo data-testid="logo" />
 
             {boardRoutes?.map((route) => {
               const isActive = location.pathname === route.path;
               return (
                 <Link
+                  className={isActive ? "active-nav" : ""}
                   borderBottom={isActive ? "solid" : "none"}
                   borderBottomColor={isActive ? "blue.900" : ""}
                   borderBottomWidth={isActive ? 3 : 0}
