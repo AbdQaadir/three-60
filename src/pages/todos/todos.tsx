@@ -16,6 +16,8 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { v4 as uuidv4 } from "uuid";
+
 import Header from "../../components/header/header";
 import { data } from "../../dump";
 import { MdMoreHoriz } from "react-icons/md";
@@ -33,10 +35,10 @@ import { COMPLETED, PENDING, BACKLOG, DELETED } from "../../helpers/constants";
 import AddTodoModal from "./add-todo-modal/add-todo-modal";
 
 export type TodoProps = {
-  id: number;
+  id: string;
   title: string;
   status: string;
-  userId: number;
+  userId: string;
   description: string;
 };
 
@@ -57,7 +59,7 @@ const Todos = () => {
     id,
     status,
   }: {
-    id: number;
+    id: string;
     status: string;
   }) => {
     if (activeTodo.id === id) {
@@ -74,6 +76,17 @@ const Todos = () => {
     setTodos(updatedTodoAfterStatusUpdate);
   };
 
+  const handleAddNewTodo = (title: string, description: string) => {
+    const newTodo = {
+      userId: uuidv4(),
+      id: uuidv4(),
+      title: title,
+      description: description,
+      status: PENDING,
+    };
+
+    setTodos((prev: TodoProps[]) => [newTodo, ...prev]);
+  };
   useEffect(() => {
     if (!activeStatus) {
       setFilteredTodos(todos);
@@ -119,7 +132,7 @@ const Todos = () => {
                       : "All Todos"}
                   </Heading>
                   <Spacer />
-                  <AddTodoModal>
+                  <AddTodoModal handleSubmit={handleAddNewTodo}>
                     {({ handleClick }) => (
                       <Button onClick={handleClick}>Create Task</Button>
                     )}
@@ -166,7 +179,7 @@ type TTodoItemProps = {
     id,
     status,
   }: {
-    id: number;
+    id: string;
     status: string;
   }) => void;
 };
@@ -314,7 +327,7 @@ const TodoDetails = ({
     id,
     status,
   }: {
-    id: number;
+    id: string;
     status: string;
   }) => void;
 }) => {

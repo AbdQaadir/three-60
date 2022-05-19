@@ -27,15 +27,23 @@ const initialValues = {
 };
 type TAddTodoModalProps = {
   children: ({ handleClick }: { handleClick: () => void }) => React.ReactNode;
+  handleSubmit: (title: string, description: string) => void;
 };
-function AddTodoModal({ children }: TAddTodoModalProps) {
+function AddTodoModal({ handleSubmit, children }: TAddTodoModalProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleClick = () => {
     isOpen ? onClose() : onOpen();
   };
   if (isOpen) {
-    return <AddTodoDialog isOpen={isOpen} onOpen={onOpen} onClose={onClose} />;
+    return (
+      <AddTodoDialog
+        isOpen={isOpen}
+        onOpen={onOpen}
+        onClose={onClose}
+        handleSubmit={handleSubmit}
+      />
+    );
   }
 
   return <>{children({ handleClick })}</>;
@@ -45,10 +53,17 @@ type TAddTodoDialogProps = {
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
+  handleSubmit: (title: string, description: string) => void;
 };
-const AddTodoDialog = ({ isOpen, onOpen, onClose }: TAddTodoDialogProps) => {
-  const handleSubmit = (values: TFormTypes) => {
-    console.log({ values });
+const AddTodoDialog = ({
+  isOpen,
+  onOpen,
+  onClose,
+  handleSubmit,
+}: TAddTodoDialogProps) => {
+  const onSubmit = (values: TFormTypes) => {
+    const { title, description } = values;
+    handleSubmit(title, description);
   };
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="md">
@@ -60,7 +75,7 @@ const AddTodoDialog = ({ isOpen, onOpen, onClose }: TAddTodoDialogProps) => {
         <Formik
           enableReinitialize
           initialValues={initialValues}
-          onSubmit={handleSubmit}
+          onSubmit={onSubmit}
         >
           {({
             values,
