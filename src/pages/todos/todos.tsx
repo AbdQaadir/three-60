@@ -134,7 +134,9 @@ const Todos = () => {
                   <Spacer />
                   <AddTodoModal handleSubmit={handleAddNewTodo}>
                     {({ handleClick }) => (
-                      <Button onClick={handleClick}>Create Task</Button>
+                      <Button colorScheme="blue" onClick={handleClick}>
+                        Create Task
+                      </Button>
                     )}
                   </AddTodoModal>
                 </HStack>

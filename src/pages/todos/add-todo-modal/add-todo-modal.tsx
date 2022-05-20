@@ -1,4 +1,5 @@
 import React from "react";
+import * as yup from "yup";
 import {
   Modal,
   ModalOverlay,
@@ -55,6 +56,12 @@ type TAddTodoDialogProps = {
   onClose: () => void;
   handleSubmit: (title: string, description: string) => void;
 };
+
+const VALIDATION_SCHEMA = yup.object().shape({
+  title: yup.string().required("Todo title is required"),
+  description: yup.string().required("Description cannot be empty!"),
+});
+
 const AddTodoDialog = ({
   isOpen,
   onOpen,
@@ -74,6 +81,7 @@ const AddTodoDialog = ({
 
         <Formik
           enableReinitialize
+          validationSchema={VALIDATION_SCHEMA}
           initialValues={initialValues}
           onSubmit={onSubmit}
         >
@@ -94,7 +102,9 @@ const AddTodoDialog = ({
                             <>
                               <TextInput
                                 name={field.name}
-                                error={meta.error}
+                                error={
+                                  meta.touched && meta.error ? meta.error : ""
+                                }
                                 value={field.value}
                                 placeholder="Title"
                                 isInvalid={
@@ -115,7 +125,9 @@ const AddTodoDialog = ({
                               <FormTextArea
                                 rows={7}
                                 name={field.name}
-                                error={meta.error}
+                                error={
+                                  meta.touched && meta.error ? meta.error : ""
+                                }
                                 value={field.value}
                                 isInvalid={
                                   meta.touched && meta.error ? true : false
