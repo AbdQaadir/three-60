@@ -76,7 +76,11 @@ const Todos = () => {
     setTodos(updatedTodoAfterStatusUpdate);
   };
 
-  const handleAddNewTodo = (title: string, description: string) => {
+  const handleAddNewTodo = (
+    title: string,
+    description: string,
+    callback: () => void
+  ) => {
     const newTodo = {
       userId: uuidv4(),
       id: uuidv4(),
@@ -86,6 +90,8 @@ const Todos = () => {
     };
 
     setTodos((prev: TodoProps[]) => [newTodo, ...prev]);
+
+    callback && callback();
   };
   useEffect(() => {
     if (!activeStatus) {

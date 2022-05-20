@@ -28,7 +28,11 @@ const initialValues = {
 };
 type TAddTodoModalProps = {
   children: ({ handleClick }: { handleClick: () => void }) => React.ReactNode;
-  handleSubmit: (title: string, description: string) => void;
+  handleSubmit: (
+    title: string,
+    description: string,
+    onClose: () => void
+  ) => void;
 };
 function AddTodoModal({ handleSubmit, children }: TAddTodoModalProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -54,7 +58,11 @@ type TAddTodoDialogProps = {
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
-  handleSubmit: (title: string, description: string) => void;
+  handleSubmit: (
+    title: string,
+    description: string,
+    onClose: () => void
+  ) => void;
 };
 
 const VALIDATION_SCHEMA = yup.object().shape({
@@ -70,7 +78,7 @@ const AddTodoDialog = ({
 }: TAddTodoDialogProps) => {
   const onSubmit = (values: TFormTypes) => {
     const { title, description } = values;
-    handleSubmit(title, description);
+    handleSubmit(title, description, onClose);
   };
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="md">
